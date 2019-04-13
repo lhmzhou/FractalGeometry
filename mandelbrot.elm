@@ -7,14 +7,13 @@ import Svg exposing (Svg, g, line, svg)
 import Svg.Attributes exposing (stroke, x1, x2, y1, y2)
 
 
-main =
-    Html.beginnerProgram { model = model, view = view, update = update }
+main = Html.beginnerProgram { model = model, view = view, update = update }
 
-
+port increment : ( Int -> msg ) -> Sub msg
+port reset : ( () -> msg ) -> Sub msg
+port render : Model -> Cmd msg
 
 -- use elm models as types => type Model = List (Float, Float)
-
-
 type alias Model =
     List ( ( Float, Float ), ( Float, Float ) )
 
@@ -35,26 +34,19 @@ model =
 t : ( ( Float, Float ), ( Float, Float ) ) -> List ( ( Float, Float ), ( Float, Float ) )
 t ( ( a, b ), ( c, d ) ) =
     let
-        eps =
-            -0.03
+        eps = -0.03
 
-        ht =
-            0.45
+        ht = 0.45
 
-        p1 =
-            ( a, b )
+        p1 = ( a, b )
 
-        p2 =
-            ( (0.5 - eps) * a + (0.5 + eps) * c, (0.5 - eps) * b + (0.5 + eps) * d )
+        p2 = ( (0.5 - eps) * a + (0.5 + eps) * c, (0.5 - eps) * b + (0.5 + eps) * d )
 
-        p3 =
-            ( 0.5 * (a + c) + ht * (d - b), 0.5 * (b + d) - ht * (c - a) )
+        p3 = ( 0.5 * (a + c) + ht * (d - b), 0.5 * (b + d) - ht * (c - a) )
 
-        p4 =
-            ( (0.5 + eps) * a + (0.5 - eps) * c, (0.5 + eps) * b + (0.5 - eps) * d )
+        p4 = ( (0.5 + eps) * a + (0.5 - eps) * c, (0.5 + eps) * b + (0.5 - eps) * d )
 
-        p5 =
-            ( c, d )
+        p5 = ( c, d )
     in
     [ ( p1, p2 )
     , ( p2, p3 )
@@ -102,14 +94,11 @@ view model =
                 List.map
                     (\( t, x ) ->
                         case t % 2 of
-                            0 ->
-                                div [ style [ ( "background-color", "#DE8C86" ) ] ] [ (text << toString) x ]
+                            0 -> div [ style [ ( "background-color", "#DE8C86" ) ] ] [ (text << toString) x ]
 
-                            1 ->
-                                div [ style [ ( "background-color", "#FFFFFF" ) ] ] [ (text << toString) x ]
+                            1 -> div [ style [ ( "background-color", "#FFFFFF" ) ] ] [ (text << toString) x ]
 
-                            _ ->
-                                div [] []
+                            _ -> div [] []
                     )
                 <|
                     List.map2 (,) (List.range 0 ((List.sum << List.map (\x -> 1)) model)) model
